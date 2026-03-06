@@ -21,6 +21,13 @@ frontend/.env.*.local
 .idea/
 .vscode/settings.json
 
+# Logs
+logs/
+*.log
+
+# Temp files
+*.tmp.*
+
 # OS
 .DS_Store
 Thumbs.db

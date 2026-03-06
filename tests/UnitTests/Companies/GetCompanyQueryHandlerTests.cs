@@ -21,16 +21,16 @@ public class GetCompanyQueryHandlerTests
     [Fact]
     public async Task Handle_WithValidOrganizationNumber_ShouldReturnCompany()
     {
-        var expectedCompany = new Company("123456789", "Test AS", "AS", "Bokmål");
+        var expectedCompany = new Company("974760673", "Test AS", "AS", "Bokmål");
 
         _companyService
             .GetCompanyAsync(
-                Arg.Is<OrganizationNumber>(n => n.Value == "123456789"),
+                Arg.Is<OrganizationNumber>(n => n.Value == "974760673"),
                 Arg.Any<CancellationToken>())
-            .Returns(Result.Success(expectedCompany));
+            .Returns(Result.Success<Company, CompanyError>(expectedCompany));
 
         var result = await _handler.Handle(
-            new GetCompanyQuery("123456789"),
+            new GetCompanyQuery("974760673"),
             CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
@@ -40,11 +40,12 @@ public class GetCompanyQueryHandlerTests
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
-    [InlineData("12345678")]   // 8 digits
-    [InlineData("1234567890")] // 10 digits
+    [InlineData("12345678")]   // too short
+    [InlineData("1234567890")] // too long
     [InlineData("12345678a")]  // non-digit
     [InlineData("invalid")]
-    public async Task Handle_WithInvalidOrganizationNumber_ShouldReturnFailureWithoutCallingService(
+    [InlineData("123456789")]  // does not start with 8 or 9
+    public async Task Handle_WithInvalidOrganizationNumber_ShouldReturnValidationErrorWithoutCallingService(
         string orgNumber)
     {
         var result = await _handler.Handle(
@@ -52,42 +53,47 @@ public class GetCompanyQueryHandlerTests
             CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
+        result.Error.Type.ShouldBe(CompanyErrorType.ValidationError);
         await _companyService
             .DidNotReceive()
             .GetCompanyAsync(Arg.Any<OrganizationNumber>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Handle_WhenCompanyNotFound_ShouldReturnFailureFromService()
+    public async Task Handle_WhenCompanyNotFound_ShouldReturnNotFoundError()
     {
-        const string error = "No company found with organization number 123456789.";
+        const string message = "No company found with organization number 974760673.";
+        var error = new CompanyError(CompanyErrorType.NotFound, message);
 
         _companyService
             .GetCompanyAsync(Arg.Any<OrganizationNumber>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Failure<Company>(error));
+            .Returns(Result.Failure<Company, CompanyError>(error));
 
         var result = await _handler.Handle(
-            new GetCompanyQuery("123456789"),
+            new GetCompanyQuery("974760673"),
             CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
-        result.Error.ShouldBe(error);
+        result.Error.Type.ShouldBe(CompanyErrorType.NotFound);
+        result.Error.Message.ShouldBe(message);
     }
 
     [Fact]
-    public async Task Handle_WhenServiceFails_ShouldPropagateError()
+    public async Task Handle_WhenServiceUnavailable_ShouldReturnServiceUnavailableError()
     {
-        const string error = "Failed to retrieve company data: connection refused.";
+        const string message = "Failed to retrieve company data: connection refused.";
+        var error = new CompanyError(CompanyErrorType.ServiceUnavailable, message);
 
         _companyService
             .GetCompanyAsync(Arg.Any<OrganizationNumber>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Failure<Company>(error));
+            .Returns(Result.Failure<Company, CompanyError>(error));
 
         var result = await _handler.Handle(
-            new GetCompanyQuery("123456789"),
+            new GetCompanyQuery("974760673"),
             CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
-        result.Error.ShouldBe(error);
+        result.Error.Type.ShouldBe(CompanyErrorType.ServiceUnavailable);
+        result.Error.Message.ShouldBe(message);
     }
 }

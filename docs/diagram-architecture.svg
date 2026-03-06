@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="640" viewBox="0 0 800 640" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+    </marker>
+    <marker id="arr-dash" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="640" fill="#f8fafc" rx="12"/>
+
+  <!-- Title -->
+  <text x="400" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">Layered Architecture</text>
+  <text x="400" y="55" text-anchor="middle" font-size="12" fill="#64748b">brreg-company-lookup</text>
+
+  <!-- ── FRONTEND ── -->
+  <rect x="160" y="68" width="480" height="72" rx="10" fill="#0d9488" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="400" y="100" text-anchor="middle" font-size="14" font-weight="700" fill="white">Frontend</text>
+  <text x="400" y="120" text-anchor="middle" font-size="11" fill="#ccfbf1">React 18 · TypeScript · Vite · Port 5173</text>
+
+  <!-- Frontend → Api -->
+  <line x1="400" y1="140" x2="400" y2="181" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="413" y="164" font-size="10" fill="#64748b">HTTP /api/*</text>
+
+  <!-- ── API ── -->
+  <rect x="160" y="183" width="480" height="72" rx="10" fill="#d97706" stroke="#b45309" stroke-width="1.5"/>
+  <text x="400" y="215" text-anchor="middle" font-size="14" font-weight="700" fill="white">Api</text>
+  <text x="400" y="235" text-anchor="middle" font-size="11" fill="#fef3c7">Carter · Mediator.SourceGenerator · Scalar · Serilog</text>
+
+  <!-- Api → Application -->
+  <line x1="288" y1="255" x2="178" y2="298" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Api → Infrastructure -->
+  <line x1="512" y1="255" x2="622" y2="298" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ── APPLICATION ── -->
+  <rect x="30" y="300" width="270" height="72" rx="10" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="165" y="331" text-anchor="middle" font-size="14" font-weight="700" fill="white">Application</text>
+  <text x="165" y="351" text-anchor="middle" font-size="11" fill="#dbeafe">CQRS · Mediator.Abstractions</text>
+
+  <!-- Application → Domain -->
+  <line x1="198" y1="372" x2="302" y2="423" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ── INFRASTRUCTURE ── -->
+  <rect x="500" y="300" width="270" height="72" rx="10" fill="#16a34a" stroke="#15803d" stroke-width="1.5"/>
+  <text x="635" y="331" text-anchor="middle" font-size="14" font-weight="700" fill="white">Infrastructure</text>
+  <text x="635" y="351" text-anchor="middle" font-size="11" fill="#dcfce7">HttpClient · IMemoryCache</text>
+
+  <!-- Infrastructure → Domain -->
+  <line x1="572" y1="372" x2="482" y2="423" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Infrastructure → Brreg (dashed, at x=680, right of Domain box which ends at x=590) -->
+  <line x1="680" y1="372" x2="680" y2="518" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arr-dash)"/>
+  <text x="692" y="452" font-size="10" fill="#94a3b8">HTTP GET</text>
+
+  <!-- ── DOMAIN ── -->
+  <rect x="210" y="425" width="380" height="72" rx="10" fill="#7c3aed" stroke="#6d28d9" stroke-width="1.5"/>
+  <text x="400" y="457" text-anchor="middle" font-size="14" font-weight="700" fill="white">Domain</text>
+  <text x="400" y="477" text-anchor="middle" font-size="11" fill="#ede9fe">Company · OrganizationNumber · CompanyError</text>
+
+  <!-- ── BRREG EXTERNAL ── -->
+  <rect x="570" y="520" width="200" height="65" rx="10" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="670" y="549" text-anchor="middle" font-size="13" font-weight="700" fill="#475569">Brønnøysundregisteret</text>
+  <text x="670" y="568" text-anchor="middle" font-size="11" fill="#94a3b8">data.brreg.no · external</text>
+
+  <!-- ── LEGEND ── -->
+  <rect x="30" y="520" width="340" height="90" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="50" y="543" font-size="12" font-weight="600" fill="#475569">Legend</text>
+  <line x1="50" y1="560" x2="92" y2="560" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="100" y="564" font-size="11" fill="#475569">Project reference (compile-time)</text>
+  <line x1="50" y1="580" x2="92" y2="580" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arr-dash)"/>
+  <text x="100" y="584" font-size="11" fill="#475569">HTTP call (runtime)</text>
+  <rect x="50" y="594" width="12" height="12" rx="2" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="68" y="604" font-size="11" fill="#475569">External system</text>
+</svg>

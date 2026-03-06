@@ -6,13 +6,15 @@ namespace UnitTests.Companies;
 
 public class OrganizationNumberTests
 {
-    [Fact]
-    public void Create_WithValidNineDigitNumber_ShouldSucceed()
+    [Theory]
+    [InlineData("812345678")] // starts with 8
+    [InlineData("974760673")] // starts with 9
+    public void Create_WithValidNumber_ShouldSucceed(string value)
     {
-        var result = OrganizationNumber.Create("123456789");
+        var result = OrganizationNumber.Create(value);
 
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Value.ShouldBe("123456789");
+        result.Value.Value.ShouldBe(value);
     }
 
     [Theory]
@@ -51,11 +53,23 @@ public class OrganizationNumberTests
         result.Error.ShouldContain("digits");
     }
 
+    [Theory]
+    [InlineData("123456789")] // starts with 1
+    [InlineData("523456789")] // starts with 5
+    [InlineData("723456789")] // starts with 7
+    public void Create_WithNumberNotStartingWith8Or9_ShouldFail(string value)
+    {
+        var result = OrganizationNumber.Create(value);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldContain("8 or 9");
+    }
+
     [Fact]
     public void Create_WithSameValue_ShouldBeEqual()
     {
-        var first = OrganizationNumber.Create("123456789").Value;
-        var second = OrganizationNumber.Create("123456789").Value;
+        var first = OrganizationNumber.Create("974760673").Value;
+        var second = OrganizationNumber.Create("974760673").Value;
 
         first.ShouldBe(second);
     }
@@ -63,8 +77,8 @@ public class OrganizationNumberTests
     [Fact]
     public void Create_WithDifferentValues_ShouldNotBeEqual()
     {
-        var first = OrganizationNumber.Create("123456789").Value;
-        var second = OrganizationNumber.Create("987654321").Value;
+        var first = OrganizationNumber.Create("974760673").Value;
+        var second = OrganizationNumber.Create("812345678").Value;
 
         first.ShouldNotBe(second);
     }
@@ -72,8 +86,8 @@ public class OrganizationNumberTests
     [Fact]
     public void ToString_ShouldReturnNumericValue()
     {
-        var orgNumber = OrganizationNumber.Create("123456789").Value;
+        var orgNumber = OrganizationNumber.Create("974760673").Value;
 
-        orgNumber.ToString().ShouldBe("123456789");
+        orgNumber.ToString().ShouldBe("974760673");
     }
 }

@@ -18,7 +18,7 @@ internal sealed class BrregCompanyService(
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    public async Task<Result<Company>> GetCompanyAsync(
+    public async Task<Result<Company, CompanyError>> GetCompanyAsync(
         OrganizationNumber organizationNumber,
         CancellationToken cancellationToken = default)
     {
@@ -34,8 +34,9 @@ internal sealed class BrregCompanyService(
                     "Company not found for organization number {OrganizationNumber}",
                     organizationNumber.Value);
 
-                return Result.Failure<Company>(
-                    $"No company found with organization number {organizationNumber.Value}.");
+                return Result.Failure<Company, CompanyError>(new CompanyError(
+                    CompanyErrorType.NotFound,
+                    $"No company found with organization number {organizationNumber.Value}."));
             }
 
             if (!response.IsSuccessStatusCode)
@@ -45,8 +46,9 @@ internal sealed class BrregCompanyService(
                     (int)response.StatusCode,
                     organizationNumber.Value);
 
-                return Result.Failure<Company>(
-                    $"Unexpected error retrieving company data. HTTP status: {(int)response.StatusCode}.");
+                return Result.Failure<Company, CompanyError>(new CompanyError(
+                    CompanyErrorType.Unexpected,
+                    $"Unexpected error retrieving company data. HTTP status: {(int)response.StatusCode}."));
             }
 
             var dto = await response.Content
@@ -54,7 +56,9 @@ internal sealed class BrregCompanyService(
 
             if (dto is null)
             {
-                return Result.Failure<Company>("Failed to deserialize company data from Brreg.");
+                return Result.Failure<Company, CompanyError>(new CompanyError(
+                    CompanyErrorType.Unexpected,
+                    "Failed to deserialize company data from Brreg."));
             }
 
             var company = new Company(
@@ -68,7 +72,18 @@ internal sealed class BrregCompanyService(
                 company.OrganizationName,
                 organizationNumber.Value);
 
-            return Result.Success(company);
+            return Result.Success<Company, CompanyError>(company);
+        }
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            logger.LogError(
+                ex,
+                "Request timed out for organization number {OrganizationNumber}",
+                organizationNumber.Value);
+
+            return Result.Failure<Company, CompanyError>(new CompanyError(
+                CompanyErrorType.ServiceUnavailable,
+                "The request to Brreg timed out. Please try again."));
         }
         catch (HttpRequestException ex)
         {
@@ -77,16 +92,20 @@ internal sealed class BrregCompanyService(
                 "HTTP error when looking up organization number {OrganizationNumber}",
                 organizationNumber.Value);
 
-            return Result.Failure<Company>($"Failed to retrieve company data: {ex.Message}");
+            return Result.Failure<Company, CompanyError>(new CompanyError(
+                CompanyErrorType.ServiceUnavailable,
+                "The Brreg service is currently unavailable. Please try again later."));
         }
-        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        catch (Exception ex)
         {
             logger.LogError(
                 ex,
-                "Request timed out for organization number {OrganizationNumber}",
+                "Unexpected error when looking up organization number {OrganizationNumber}",
                 organizationNumber.Value);
 
-            return Result.Failure<Company>("The request to Brreg timed out. Please try again.");
+            return Result.Failure<Company, CompanyError>(new CompanyError(
+                CompanyErrorType.Unexpected,
+                "An unexpected error occurred while retrieving company data."));
         }
     }
 }

@@ -25,6 +25,11 @@ public sealed class OrganizationNumber : ValueObject
             return Result.Failure<OrganizationNumber>("Organization number must contain only digits.");
         }
 
+        if (value[0] != '8' && value[0] != '9')
+        {
+            return Result.Failure<OrganizationNumber>("Organization number must start with 8 or 9.");
+        }
+
         return Result.Success(new OrganizationNumber(value));
     }
 

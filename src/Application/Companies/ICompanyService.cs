@@ -5,7 +5,7 @@ namespace Application.Companies;
 
 public interface ICompanyService
 {
-    Task<Result<Company>> GetCompanyAsync(
+    Task<Result<Company, CompanyError>> GetCompanyAsync(
         OrganizationNumber organizationNumber,
         CancellationToken cancellationToken = default);
 }

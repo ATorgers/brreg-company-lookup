@@ -4,4 +4,4 @@ using Mediator;
 
 namespace Application.Companies.GetCompany;
 
-public sealed record GetCompanyQuery(string OrganizationNumber) : IQuery<Result<Company>>;
+public sealed record GetCompanyQuery(string OrganizationNumber) : IQuery<Result<Company, CompanyError>>;

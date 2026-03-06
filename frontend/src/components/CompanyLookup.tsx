@@ -24,6 +24,7 @@ const FIELD_ORDER: (keyof Company)[] = [
 function validateInput(value: string): string | null {
   if (!value.trim()) return 'Please enter an organization number.'
   if (!/^\d{9}$/.test(value)) return 'Organization number must be exactly 9 digits.'
+  if (!/^[89]/.test(value)) return 'Organization number must start with 8 or 9.'
   return null
 }
 

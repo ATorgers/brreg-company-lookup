@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="790" height="760" viewBox="0 0 790 760" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#475569"/>
+    </marker>
+    <marker id="arr-err" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+    </marker>
+    <marker id="arr-ok" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="790" height="760" fill="#f8fafc" rx="12"/>
+
+  <!-- Title -->
+  <text x="395" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">Request Flow</text>
+  <text x="395" y="55" text-anchor="middle" font-size="12" fill="#64748b">GET /api/companies/{orgnr} — happy path with error branches</text>
+
+  <!-- ── LAYER BANDS (background) ── -->
+  <rect x="10" y="68" width="770" height="77" rx="6" fill="#f0fdf4" opacity="0.6"/>
+  <text x="18" y="84" font-size="9" font-weight="600" fill="#16a34a" letter-spacing="1">FRONTEND</text>
+
+  <rect x="10" y="153" width="770" height="77" rx="6" fill="#fff7ed" opacity="0.6"/>
+  <text x="18" y="169" font-size="9" font-weight="600" fill="#d97706" letter-spacing="1">API</text>
+
+  <rect x="10" y="238" width="770" height="77" rx="6" fill="#eff6ff" opacity="0.6"/>
+  <text x="18" y="254" font-size="9" font-weight="600" fill="#2563eb" letter-spacing="1">APPLICATION</text>
+
+  <rect x="10" y="323" width="770" height="162" rx="6" fill="#f0fdf4" opacity="0.4"/>
+  <text x="18" y="339" font-size="9" font-weight="600" fill="#16a34a" letter-spacing="1">INFRASTRUCTURE</text>
+
+  <rect x="10" y="493" width="770" height="77" rx="6" fill="#f8fafc" opacity="0.8"/>
+  <text x="18" y="509" font-size="9" font-weight="600" fill="#94a3b8" letter-spacing="1">EXTERNAL</text>
+
+  <!-- Main column boxes (x=155, w=360, centered at 335) -->
+
+  <!-- 1. React Frontend -->
+  <rect x="155" y="75" width="360" height="55" rx="8" fill="#0d9488" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="335" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="white">React Frontend</text>
+  <text x="335" y="116" text-anchor="middle" font-size="10" fill="#ccfbf1">CompanyLookup.tsx · validates input client-side</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="335" y1="130" x2="335" y2="161" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="347" y="149" font-size="10" fill="#475569">HTTP GET /api/companies/{orgnr}</text>
+
+  <!-- 2. CompanyModule -->
+  <rect x="155" y="163" width="360" height="55" rx="8" fill="#d97706" stroke="#b45309" stroke-width="1.5"/>
+  <text x="335" y="187" text-anchor="middle" font-size="13" font-weight="700" fill="white">CompanyModule</text>
+  <text x="335" y="204" text-anchor="middle" font-size="10" fill="#fef3c7">Carter · ICarterModule · maps HTTP → Mediator</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="335" y1="218" x2="335" y2="246" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="347" y="236" font-size="10" fill="#475569">mediator.Send(GetCompanyQuery)</text>
+
+  <!-- 3. GetCompanyQueryHandler -->
+  <rect x="155" y="248" width="360" height="55" rx="8" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="335" y="272" text-anchor="middle" font-size="13" font-weight="700" fill="white">GetCompanyQueryHandler</text>
+  <text x="335" y="289" text-anchor="middle" font-size="10" fill="#dbeafe">validates OrganizationNumber · calls ICompanyService</text>
+
+  <!-- Error branch: invalid org nr -->
+  <line x1="515" y1="270" x2="548" y2="270" stroke="#dc2626" stroke-width="1.2" marker-end="url(#arr-err)"/>
+  <rect x="550" y="251" width="215" height="38" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+  <text x="657" y="268" text-anchor="middle" font-size="10" font-weight="600" fill="#dc2626">invalid org nr</text>
+  <text x="657" y="282" text-anchor="middle" font-size="10" fill="#dc2626">→ 422 Unprocessable Entity</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="335" y1="303" x2="335" y2="331" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="347" y="321" font-size="10" fill="#475569">GetCompanyAsync(orgNr)</text>
+
+  <!-- 4. CachedCompanyService -->
+  <rect x="155" y="333" width="360" height="55" rx="8" fill="#16a34a" stroke="#15803d" stroke-width="1.5"/>
+  <text x="335" y="357" text-anchor="middle" font-size="13" font-weight="700" fill="white">CachedCompanyService</text>
+  <text x="335" y="374" text-anchor="middle" font-size="10" fill="#dcfce7">IMemoryCache · 1-hour TTL · decorator pattern</text>
+
+  <!-- Cache hit branch -->
+  <line x1="515" y1="356" x2="548" y2="356" stroke="#16a34a" stroke-width="1.2" marker-end="url(#arr-ok)"/>
+  <rect x="550" y="337" width="215" height="38" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="657" y="354" text-anchor="middle" font-size="10" font-weight="600" fill="#16a34a">cache hit</text>
+  <text x="657" y="368" text-anchor="middle" font-size="10" fill="#16a34a">→ Company (no HTTP call)</text>
+
+  <!-- Arrow 4→5 (cache miss) -->
+  <line x1="335" y1="388" x2="335" y2="416" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="347" y="406" font-size="10" fill="#475569">cache miss → delegates</text>
+
+  <!-- 5. BrregCompanyService -->
+  <rect x="155" y="418" width="360" height="55" rx="8" fill="#16a34a" stroke="#15803d" stroke-width="1.5"/>
+  <text x="335" y="442" text-anchor="middle" font-size="13" font-weight="700" fill="white">BrregCompanyService</text>
+  <text x="335" y="459" text-anchor="middle" font-size="10" fill="#dcfce7">typed HttpClient · maps HTTP response to domain</text>
+
+  <!-- Arrow 5→6 -->
+  <line x1="335" y1="473" x2="335" y2="501" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="347" y="491" font-size="10" fill="#475569">HTTP GET /enheter/{orgnr}</text>
+
+  <!-- 6. Brreg API (external) -->
+  <rect x="155" y="503" width="360" height="55" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="335" y="527" text-anchor="middle" font-size="13" font-weight="700" fill="#475569">Brønnøysundregisteret API</text>
+  <text x="335" y="544" text-anchor="middle" font-size="10" fill="#94a3b8">data.brreg.no · external service</text>
+
+  <!-- Error branches from Brreg -->
+  <line x1="515" y1="518" x2="548" y2="518" stroke="#dc2626" stroke-width="1.2" marker-end="url(#arr-err)"/>
+  <rect x="550" y="496" width="215" height="70" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+  <text x="657" y="514" text-anchor="middle" font-size="10" font-weight="600" fill="#dc2626">error responses</text>
+  <text x="557" y="530" font-size="10" fill="#dc2626">404 → CompanyError.NotFound</text>
+  <text x="557" y="545" font-size="10" fill="#dc2626">timeout → CompanyError.ServiceUnavailable</text>
+  <text x="557" y="560" font-size="10" fill="#dc2626">error → CompanyError.Unexpected</text>
+
+  <!-- Arrow 6→7 (success) -->
+  <line x1="335" y1="558" x2="335" y2="591" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="347" y="578" font-size="10" fill="#475569">200 OK + JSON body</text>
+
+  <!-- 7. Result mapping box -->
+  <rect x="155" y="593" width="360" height="55" rx="8" fill="#7c3aed" stroke="#6d28d9" stroke-width="1.5"/>
+  <text x="335" y="617" text-anchor="middle" font-size="13" font-weight="700" fill="white">Result&lt;Company, CompanyError&gt;</text>
+  <text x="335" y="634" text-anchor="middle" font-size="10" fill="#ede9fe">CompanyModule maps to HTTP status code</text>
+
+  <!-- Arrow 7→8 -->
+  <line x1="335" y1="648" x2="335" y2="676" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- 8. HTTP Response -->
+  <rect x="155" y="678" width="360" height="55" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="335" y="702" text-anchor="middle" font-size="13" font-weight="700" fill="white">HTTP Response</text>
+  <text x="335" y="719" text-anchor="middle" font-size="10" fill="#94a3b8">200 OK · 404 · 422 · 503 · 500</text>
+</svg>
