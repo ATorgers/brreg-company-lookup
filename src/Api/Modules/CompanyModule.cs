@@ -9,9 +9,7 @@ public class CompanyModule : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/companies")
-                       .WithTags("Companies")
-                       .WithOpenApi();
+        var group = app.MapGroup("/api/companies");
 
         group.MapGet("/{organizationNumber}", async (
             string organizationNumber,
@@ -42,13 +40,6 @@ public class CompanyModule : ICarterModule
                     detail: result.Error.Message,
                     statusCode: StatusCodes.Status500InternalServerError),
             };
-        })
-        .WithName("GetCompany")
-        .WithSummary("Look up a Norwegian company by its 9-digit organization number")
-        .Produces<Domain.Companies.Company>()
-        .ProducesProblem(StatusCodes.Status404NotFound)
-        .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
-        .ProducesProblem(StatusCodes.Status503ServiceUnavailable)
-        .ProducesProblem(StatusCodes.Status500InternalServerError);
+        });
     }
 }

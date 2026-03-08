@@ -1,14 +1,14 @@
 using Carter;
 using Infrastructure;
-using Scalar.AspNetCore;
 using Serilog;
 
+
+// Building and registering services
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
-builder.Services.AddOpenApi();
 builder.Services.AddCarter();
 builder.Services.AddMediator();
 
@@ -29,12 +29,7 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
-
+// Middleware pipeline
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseCors();
